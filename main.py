@@ -235,6 +235,11 @@ class DisplayModeApp(tk.Tk):
             win32api.CloseHandle(mutex_handle)
             mutex_handle = None
 
+    def on_display_mode_selected(self, mode):
+        """Handle display mode selection from the system tray menu"""
+        self.switch_display_mode(mode)
+        print(f"Display mode changed to: {mode}")
+
 def create_image():
     # Create a placeholder image if icon.png is not found
     width = 64
@@ -261,7 +266,15 @@ def run_icon(app):
     def on_exit(icon, item):
         app.exit_app(icon)
 
-    menu = (item('Show Settings', lambda icon, item: app.after(0, app.show_window)), item('Exit', on_exit))
+    # Create menu with display mode options
+    menu = (
+        item('Show Settings', lambda icon, item: app.after(0, app.show_window)),
+        item('Extend', lambda icon, item: app.after(0, lambda: app.on_display_mode_selected("Extend"))),
+        item('PC Screen Only', lambda icon, item: app.after(0, lambda: app.on_display_mode_selected("PC Screen Only"))),
+        item('Second Screen Only', lambda icon, item: app.after(0, lambda: app.on_display_mode_selected("Second Screen Only"))),
+        item('Duplicate', lambda icon, item: app.after(0, lambda: app.on_display_mode_selected("Duplicate"))),
+        item('Exit', on_exit)
+    )
     icon = pystray.Icon("DisplayMode", image, "DisplayMode", menu, on_activate=lambda icon, item: app.after(0, app.show_window))
     icon.run()
 
